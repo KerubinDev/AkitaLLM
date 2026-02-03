@@ -81,6 +81,20 @@ class DiffApplier:
                     f.write("\n".join(patched_lines) + "\n")
 
             print(f"SUCCESS: Applied {len(patches)} patches successfully.")
+            
+            # 4. Pre-flight Validation
+            # Run tests to ensure the patch didn't break anything
+            if (base / "tests").exists():
+                print("🧪 Running pre-flight validation (pytest)...")
+                import subprocess
+                # Run pytest in the base_path
+                result = subprocess.run(["pytest"], cwd=str(base), capture_output=True, text=True)
+                if result.returncode != 0:
+                    print(f"❌ Validation FAILED:\n{result.stdout}")
+                    raise Exception("Pre-flight validation failed. Tests are broken.")
+                else:
+                    print("✅ Pre-flight validation passed!")
+            
             return True
 
         except Exception as e:

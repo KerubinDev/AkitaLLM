@@ -3,8 +3,8 @@
 This document outlines the strategic steps required to transition AkitaLLM from Beta to a stable, production-ready v1.0.0.
 
 ## 🎯 Phase 1: Robust Execution (The Core)
-- [ ] **Complete DiffApplier**: Implement full Unified Diff application with rollback capabilities.
-- [ ] **Atomicity**: Ensure multi-file changes are applied as a single transaction (all or nothing).
+- [x] **Complete DiffApplier**: Implement full Unified Diff application with rollback capabilities.
+- [x] **Atomicity**: Ensure multi-file changes are applied as a single transaction (all or nothing).
 - [ ] **Pre-flight Validation**: Automatically run tests or linters on the proposed diff before application.
 
 ## 🧠 Phase 2: Intelligent Context (AST & Semantics)
