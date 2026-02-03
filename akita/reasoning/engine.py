@@ -4,16 +4,20 @@ from akita.tools.base import ShellTools
 from akita.core.plugins import PluginManager
 from akita.tools.context import ContextBuilder
 from akita.schemas.review import ReviewResult
+from akita.core.trace import ReasoningTrace
+from akita.reasoning.session import ConversationSession
 import json
 from rich.console import Console
 
 console = Console()
-
+ 
 class ReasoningEngine:
     def __init__(self, model: AIModel):
         self.model = model
         self.plugin_manager = PluginManager()
         self.plugin_manager.discover_all()
+        self.trace = ReasoningTrace()
+        self.session: Optional[ConversationSession] = None
 
     def run_review(self, path: str) -> ReviewResult:
         """
@@ -94,30 +98,39 @@ class ReasoningEngine:
         ])
         return response.content
 
-    def run_solve(self, query: str, path: str = ".") -> str:
+    def run_solve(self, query: str, path: str = ".", session: Optional[ConversationSession] = None) -> str:
         """
         Generates a Unified Diff solution for the given query.
+        Supports iterative refinement if a session is provided.
         """
-        console.print(f"🔍 [bold]Building context for solution...[/]")
-        builder = ContextBuilder(path)
-        snapshot = builder.build()
+        self.trace.add_step("Solve", f"Starting solve for query: {query}")
         
-        files_str = "\n---\n".join([f"FILE: {f.path}\nCONTENT:\n{f.content}" for f in snapshot.files[:10]]) # Limit for solve
+        if not session:
+            self.trace.add_step("Context", f"Building context for {path}")
+            builder = ContextBuilder(path)
+            snapshot = builder.build()
+            
+            files_str = "\n---\n".join([f"FILE: {f.path}\nCONTENT:\n{f.content}" for f in snapshot.files[:10]])
+            tools_info = "\n".join([f"- {t['name']}: {t['description']}" for t in self.plugin_manager.get_all_tools()])
+            
+            system_prompt = (
+                "You are an Expert Programmer. Solve the requested task by providing code changes in Unified Diff format. "
+                "Respond ONLY with the Diff block. Use +++ and --- with file paths relative to project root.\n\n"
+                f"Available Tools:\n{tools_info}"
+            )
+            
+            session = ConversationSession()
+            session.add_message("system", system_prompt)
+            session.add_message("user", f"Task: {query}\n\nContext:\n{files_str}")
+            self.session = session
+        else:
+            session.add_message("user", query)
+
+        console.print("🤖 [bold green]Thinking...[/]")
+        response = self.model.chat(session.get_messages_dict())
+        session.add_message("assistant", response.content)
         
-        tools_info = "\n".join([f"- {t['name']}: {t['description']}" for t in self.plugin_manager.get_all_tools()])
-        
-        system_prompt = (
-            "You are an Expert Programmer. Solve the requested task by providing code changes in Unified Diff format. "
-            "Respond ONLY with the Diff block. Use +++ and --- with file paths relative to project root.\n\n"
-            f"Available Tools:\n{tools_info}"
-        )
-        user_prompt = f"Task: {query}\n\nContext:\n{files_str}\n\nGenerate the Unified Diff."
-        
-        console.print("🤖 [bold green]Generating solution...[/]")
-        response = self.model.chat([
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
-        ])
+        self.trace.add_step("LLM Response", "Received solution from model")
         return response.content
 
     def run_pipeline(self, task: str):

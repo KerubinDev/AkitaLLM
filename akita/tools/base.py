@@ -15,7 +15,12 @@ class FileSystemTools:
             return f.read()
 
     @staticmethod
-    def list_files(path: str) -> List[str]:
+    def write_file(path: str, content: str):
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+    @staticmethod
+    def list_dir(path: str) -> List[str]:
         return os.listdir(path)
 
 class ShellTools:

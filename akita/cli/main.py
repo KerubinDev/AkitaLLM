@@ -8,6 +8,7 @@ from rich.table import Table
 from rich.markdown import Markdown
 from rich.syntax import Syntax
 from dotenv import load_dotenv
+from akita.tools.diff import DiffApplier
 
 # Load environment variables from .env file
 load_dotenv()
@@ -119,27 +120,53 @@ def review(
 @app.command()
 def solve(
     query: str,
+    interactive: bool = typer.Option(False, "--interactive", "-i", help="Run in interactive mode to refine the solution."),
+    trace: bool = typer.Option(False, "--trace", help="Show the internal reasoning trace."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Run in dry-run mode.")
 ):
     """
-    Generate a solution for the given query.
+    Generate and apply a solution for the given query.
     """
     model = get_model()
     engine = ReasoningEngine(model)
     console.print(Panel(f"[bold blue]Akita[/] is thinking about: [italic]{query}[/]", title="Solve Mode"))
     
+    current_query = query
+    session = None
+    
     try:
-        diff_output = engine.run_solve(query)
-        
-        console.print(Panel("[bold green]Suggested Code Changes (Unified Diff):[/]"))
-        syntax = Syntax(diff_output, "diff", theme="monokai", line_numbers=True)
-        console.print(syntax)
-        
+        while True:
+            diff_output = engine.run_solve(current_query, session=session)
+            session = engine.session
+            
+            if trace:
+                console.print(Panel(str(engine.trace), title="[bold cyan]Reasoning Trace[/]", border_style="cyan"))
+            console.print(Panel("[bold green]Suggested Code Changes (Unified Diff):[/]"))
+            syntax = Syntax(diff_output, "diff", theme="monokai", line_numbers=True)
+            console.print(syntax)
+            
+            if interactive:
+                action = typer.prompt("\n[A]pprove, [R]efine with feedback, or [C]ancel?", default="A").upper()
+                if action == "A":
+                    break
+                elif action == "R":
+                    current_query = typer.prompt("Enter your feedback/refinement")
+                    continue
+                else:
+                    console.print("[yellow]Operation cancelled.[/]")
+                    return
+            else:
+                break
+
         if not dry_run:
             confirm = typer.confirm("\nDo you want to apply these changes?")
             if confirm:
-                console.print("[bold yellow]Applying changes... (DiffApplier to be implemented next)[/]")
-                # We will implement DiffApplier in the next step
+                console.print("[bold yellow]🚀 Applying changes...[/]")
+                success = DiffApplier.apply_unified_diff(diff_output)
+                if success:
+                    console.print("[bold green]✅ Changes applied successfully![/]")
+                else:
+                    console.print("[bold red]❌ Failed to apply changes.[/]")
             else:
                 console.print("[bold yellow]Changes discarded.[/]")
     except Exception as e:

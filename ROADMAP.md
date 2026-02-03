@@ -15,12 +15,12 @@ This document outlines the strategic steps required to transition AkitaLLM from 
 ## 🔌 Phase 3: Plugin Architecture (Extensibility)
 - [x] **Plugin Engine**: Implement a plugin system using Python `entry_points`.
 - [x] **Core Plugins**: Move standard tools (Linter, Git) to a plugin-based internal structure.
-- [ ] **Third-Party Support**: Create a SDK/Template for developers to build their own AkitaLLM plugins.
+- [x] **Third-Party Support**: Create a SDK/Template for developers to build their own AkitaLLM plugins. (See [PLUGINS.md](file:///c:/Users/kelvi/OneDrive/Área de Trabalho/AkitaLLM/PLUGINS.md))
 
 ## 🔄 Phase 4: Interactive Feedback Loop
-- [ ] **Plan Refinement**: Allow users to interactively edit and approve plans before generation.
-- [ ] **Reasoning Logs**: Visual representation of the "thought process" for easier debugging.
-- [ ] **Conversational Refactoring**: Maintain state across multiple commands for iterative problem solving.
+- [x] **Human Review**: Allow users to review/edit the generated diff before application.
+- [x] **Reasoning Trace**: Show why the LLM made specific decisions or selected certain files.
+- [x] **Stateful Chat**: Enable follow-up questions to refine a solution.
 
 ## 📈 Phase 5: Production & Enterprise Grade
 - [ ] **Binary Releases**: Compile AkitaLLM as standalone binaries (Windows, Linux, macOS).
