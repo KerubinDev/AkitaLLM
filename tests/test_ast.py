@@ -20,7 +20,8 @@ def top_function():
     parser = ASTParser()
     defs = parser.get_definitions(str(file_path))
     found_names = [d["name"] for d in defs]
-    assert len(defs) == 3, f"Expected 3 definitions (MyClass, method_one, top_function), but found {len(defs)}: {found_names}"
+    # We expect exactly 3: MyClass, method_one, top_function
+    assert len(defs) == 3, f"Missing definitions! Found {len(defs)}: {found_names}. Expected 3 (MyClass, method_one, top_function)"
     
     # Check class
     my_class = next(d for d in defs if d["name"] == "MyClass")

@@ -19,7 +19,7 @@ class ASTParser:
         return self.parser.parse(content)
 
     def get_definitions(self, file_path: str) -> List[Dict[str, Any]]:
-        """Extract classes and functions with their line ranges using TreeCursor."""
+        """Extract classes and functions with their line ranges using recursive traversal."""
         tree = self.parse_file(file_path)
         if not tree:
             return []
@@ -28,48 +28,44 @@ class ASTParser:
             content = f.read()
 
         definitions = []
-        cursor = tree.walk()
         
-        reached_root = False
-        while not reached_root:
-            node = cursor.node
-            if node.type in ["class_definition", "function_definition"]:
+        def explore(node):
+            # Check for definitions
+            if node.type in ["class_definition", "function_definition", "decorated_definition"]:
+                # Find name
                 name_node = node.child_by_field_name("name")
+                if not name_node and node.type == "decorated_definition":
+                    # For decorated definitions, the name is in the class/function child
+                    inner = node.child_by_field_name("definition")
+                    if inner:
+                        name_node = inner.child_by_field_name("name")
+                
                 name = content[name_node.start_byte:name_node.end_byte].decode("utf-8") if name_node else "anonymous"
                 
+                # Docstring extraction
                 docstring = None
                 body = node.child_by_field_name("body")
                 if body and body.children:
-                    # Look for first expression statement that is a string
                     for stmt in body.children:
                         if stmt.type == "expression_statement":
                             child = stmt.children[0]
                             if child.type == "string":
                                 docstring = content[child.start_byte:child.end_byte].decode("utf-8").strip('"\' \n')
-                        break # Only check first statement for docstring
+                        break # Only first statement
 
                 definitions.append({
                     "name": name,
-                    "type": "class" if node.type == "class_definition" else "function",
+                    "type": "class" if "class" in node.type else "function",
                     "start_line": node.start_point[0] + 1,
                     "end_line": node.end_point[0] + 1,
                     "docstring": docstring
                 })
 
-            # Traversal logic
-            if cursor.goto_first_child():
-                continue
-            if cursor.goto_next_sibling():
-                continue
-            
-            retracing = True
-            while retracing:
-                if not cursor.goto_parent():
-                    retracing = False
-                    reached_root = True
-                elif cursor.goto_next_sibling():
-                    retracing = False
-        
+            # Always explore children regardless of current node type
+            for child in node.children:
+                explore(child)
+
+        explore(tree.root_node)
         return definitions
 
     def get_source_segment(self, file_path: str, start_line: int, end_line: int) -> str:
