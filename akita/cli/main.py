@@ -85,6 +85,9 @@ def run_onboarding():
     # New: Preferred Language for UI (Visual Sync Test)
     lang_choice = typer.prompt("🌍 Select preferred UI language (en/pt/es)", default="en")
 
+    # New: Creativity (Temperature) setting
+    creativity = typer.prompt("🎨 Creativity level (0.0=precise, 1.0=creative)", default=0.7, type=float)
+
     # Determine if we should save the key or use an env ref
     use_env = typer.confirm("Would you like to use an environment variable for the API key? (Recommended)", default=True)
     
@@ -99,7 +102,8 @@ def run_onboarding():
             "provider": provider.name,
             "name": selected_model,
             "api_key": final_key_ref,
-            "language": lang_choice  # Saving the language choice
+            "language": lang_choice,
+            "temperature": creativity  # Saving temperature
         }
     }
     

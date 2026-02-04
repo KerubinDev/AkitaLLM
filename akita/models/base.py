@@ -12,21 +12,26 @@ class ModelResponse(BaseModel):
     raw: Any
 
 class AIModel:
-    def __init__(self, model_name: str, api_key: Optional[str] = None, base_url: Optional[str] = None):
+    def __init__(self, model_name: str, api_key: Optional[str] = None, base_url: Optional[str] = None, temperature: float = 0.7):
         self.model_name = model_name
         self.api_key = api_key
         self.base_url = base_url
+        self.temperature = temperature
 
     def chat(self, messages: List[Dict[str, str]], **kwargs) -> ModelResponse:
         """
         Send a chat completion request.
         """
+        # Merge global temperature with specific kwargs if provided
+        request_kwargs = {"temperature": self.temperature}
+        request_kwargs.update(kwargs)
+
         response = litellm.completion(
             model=self.model_name,
             messages=messages,
             api_key=self.api_key,
             base_url=self.base_url,
-            **kwargs
+            **request_kwargs
         )
         content = response.choices[0].message.content
         return ModelResponse(content=content, raw=response)
@@ -37,6 +42,7 @@ def get_model(model_name: Optional[str] = None) -> AIModel:
     """
     provider = get_config_value("model", "provider", "openai")
     api_key = get_config_value("model", "api_key")
+    temperature = get_config_value("model", "temperature", 0.7)
     
     if model_name is None:
         model_name = get_config_value("model", "name", "gpt-4o-mini")
@@ -49,5 +55,5 @@ def get_model(model_name: Optional[str] = None) -> AIModel:
     else:
         full_model_name = f"{provider}/{model_name}"
     
-    # For Ollama, we might need a base_url, but for now we assume default
-    return AIModel(model_name=full_model_name, api_key=api_key)
+    # Pass temperature to the model
+    return AIModel(model_name=full_model_name, api_key=api_key, temperature=temperature)
