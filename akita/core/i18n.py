@@ -48,6 +48,26 @@ TRANSLATIONS = {
         "welcome.subtitle": "A deterministic AI orchestrator for programmers.",
         "welcome.help_hint": "[dim]Run [bold]akita --help[/] to see all commands.[/]",
         "welcome.commands": "[bold]Common Commands:[/]\n- [cyan]akita solve[/]: Solve a coding task\n- [cyan]akita review[/]: Audit current directory\n- [cyan]akita config[/]: Manage settings",
+
+        "doctor.checking": "🩺 Checking system health...",
+        "doctor.python": "Python Version",
+        "doctor.config": "Configuration File",
+        "doctor.key": "API Key",
+        "doctor.connection": "API Connectivity",
+        "doctor.dependencies": "Dependencies",
+        "doctor.warn.connection": "Provider unreachable (Timeout/Rate Limit)",
+        "doctor.fail.key": "Missing API Key",
+        "doctor.fail.config": "Config missing",
+        "doctor.all_good": "[bold green]System Ready![/]",
+        "doctor.issues_found": "[bold yellow]Issues found. See above.[/]",
+
+        "solve.input_instruction": "[bold]Input Mode:[/] Type your instructions below.\n[dim]Press [bold]Ctrl+D[/] (or Ctrl+Z on Windows) to send.\nPress [bold]Ctrl+C[/] to cancel.[/]",
+        "solve.start_session": "[bold blue]Starting new reasoning session...[/]",
+        
+        "diff.summary": "[bold]Changes summary:[/]\n- {files} files changed\n- [green]+{insertions}[/] / [red]-{deletions}[/] lines\n",
+        
+        "error.global_title": "Unexpected Error",
+        "error.global_hint": "Run with [bold]--debug[/] or set [bold]AKITA_DEBUG=1[/] to see the full traceback.",
     },
     "pt": {
         "onboarding.welcome": "[bold cyan]Configuração do AkitaLLM[/]\n\n[italic]Configuração API-first...[/]",
@@ -95,6 +115,26 @@ TRANSLATIONS = {
         "welcome.subtitle": "Um orquestrador de IA determinístico para programadores.",
         "welcome.help_hint": "[dim]Execute [bold]akita --help[/] para ver todos os comandos.[/]",
         "welcome.commands": "[bold]Comandos Comuns:[/]\n- [cyan]akita solve[/]: Resolver uma tarefa\n- [cyan]akita review[/]: Auditar diretório\n- [cyan]akita config[/]: Gerenciar configurações",
+
+        "doctor.checking": "🩺 Verificando integridade do sistema...",
+        "doctor.python": "Versão Python",
+        "doctor.config": "Arquivo de Configuração",
+        "doctor.key": "Chave de API",
+        "doctor.connection": "Conectividade API",
+        "doctor.dependencies": "Dependências",
+        "doctor.warn.connection": "Provedor inacessível (Timeout/Rate Limit)",
+        "doctor.fail.key": "Chave de API ausente",
+        "doctor.fail.config": "Configuração ausente",
+        "doctor.all_good": "[bold green]Sistema Pronto![/]",
+        "doctor.issues_found": "[bold yellow]Problemas encontrados. Veja acima.[/]",
+
+        "solve.input_instruction": "[bold]Modo de Entrada:[/] Digite suas instruções abaixo.\n[dim]Pressione [bold]Ctrl+D[/] (ou Ctrl+Z no Windows) para enviar.\nPressione [bold]Ctrl+C[/] para cancelar.[/]",
+        "solve.start_session": "[bold blue]Iniciando nova sessão de raciocínio...[/]",
+        
+        "diff.summary": "[bold]Resumo das mudanças:[/]\n- {files} arquivos alterados\n- [green]+{insertions}[/] / [red]-{deletions}[/] linhas\n",
+
+        "error.global_title": "Erro Inesperado",
+        "error.global_hint": "Execute com [bold]--debug[/] ou defina [bold]AKITA_DEBUG=1[/] para ver o traceback completo.",
     }
 }
 

@@ -1,19 +1,23 @@
 import typer
+import sys
+import os
 from typing import Optional, List, Dict, Any
 from rich.console import Console
 from rich.panel import Panel
-from akita.reasoning.engine import ReasoningEngine
-from akita.core.indexing import CodeIndexer
-from akita.models.base import get_model
-from akita.core.config import load_config, save_config, reset_config, CONFIG_FILE
 from rich.table import Table
 from rich.markdown import Markdown
 from rich.syntax import Syntax
 from dotenv import load_dotenv
+
+from akita.reasoning.engine import ReasoningEngine
+from akita.core.indexing import CodeIndexer
+from akita.models.base import get_model
+from akita.core.config import load_config, save_config, reset_config, CONFIG_FILE
 from akita.tools.diff import DiffApplier
 from akita.tools.git import GitTool
 from akita.core.providers import detect_provider
 from akita.core.i18n import t
+from akita.cli.doctor import doctor_app
 
 # Load environment variables from .env file
 load_dotenv()
@@ -23,6 +27,7 @@ app = typer.Typer(
     help="AkitaLLM: Local-first AI orchestrator for programmers.",
     add_completion=False,
 )
+app.add_typer(doctor_app, name="doctor")
 console = Console()
 
 @app.callback(invoke_without_command=True)
@@ -194,7 +199,7 @@ def solve(
     """
     # Interactive Input if no query provided
     if not query:
-        console.print(t("solve.input_prompt"))
+        console.print(t("solve.input_instruction"))
         lines = []
         try:
             while True:
@@ -202,11 +207,18 @@ def solve(
                 lines.append(line)
         except EOFError:
             pass
+        except KeyboardInterrupt:
+            console.print(f"\n{t('solve.cancelled')}")
+            raise typer.Exit()
+            
         query = "\n".join(lines).strip()
         
         if not query:
             console.print("[yellow]Empty query. Exiting.[/]")
             raise typer.Exit()
+
+    # Session Start Indicator
+    console.print(t("solve.start_session"))
 
     model = get_model()
     engine = ReasoningEngine(model)
@@ -224,13 +236,29 @@ def solve(
             if trace:
                 console.print(Panel(str(engine.trace), title=t("solve.trace_title"), border_style="cyan"))
             
+            # --- Diff Summary ---
+            try:
+                import whatthepatch
+                patches = list(whatthepatch.parse_patch(diff_output))
+                files_changed = len(patches)
+                insertions = 0
+                deletions = 0
+                for patch in patches:
+                    if patch.changes:
+                        for change in patch.changes:
+                            if change.old is None and change.new is not None:
+                                insertions += 1
+                            elif change.old is not None and change.new is None:
+                                deletions += 1
+                
+                console.print(t("diff.summary", files=files_changed, insertions=insertions, deletions=deletions))
+            except:
+                pass # Swallow summary errors, show diff anyway
+
             console.print(Panel(t("solve.diff_title")))
             syntax = Syntax(diff_output, "diff", theme="monokai", line_numbers=True)
             console.print(syntax)
             
-            # If explicit interactive flag OR we just captured input interactively, we probably want to offer refinement?
-            # The spec said "interactive solve", usually implies refinement loop.
-            # Let's keep the logic: if --interactive flag is used, prompt.
             if interactive:
                 action = typer.prompt(t("solve.interactive_prompt"), default="A").upper()
                 if action == "A":
@@ -412,4 +440,17 @@ def config_model_legacy():
     run_onboarding()
 
 if __name__ == "__main__":
-    app()
+    try:
+        app()
+    except Exception as e:
+        # Check for debug flags in args since typer might not have fully parsed yet if it crashed early
+        debug_mode = os.environ.get("AKITA_DEBUG", "").strip() == "1"
+        if "--debug" in sys.argv or debug_mode:
+            console.print_exception(show_locals=True)
+        else:
+            console.print(Panel(
+                f"{t('error.global_title')}: {str(e)}\n\n{t('error.global_hint')}",
+                title="💥 Oops",
+                border_style="red"
+            ))
+        sys.exit(1)
