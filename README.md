@@ -1,105 +1,175 @@
 # AkitaLLM
-### A deterministic, local-first AI orchestrator for software engineers.
+
+```
+
+Analyze → Plan → Execute → Validate
+
+````
+
+**A deterministic, local-first AI orchestrator for software engineers.**
+
+AkitaLLM is not a chat interface.
+It is not autocomplete.
+It is not “AI magic”.
+
+It is an engineering tool.
 
 ---
 
-## What is AkitaLLM?
+## What AkitaLLM is (and what it is not)
 
-AkitaLLM is not another "AI wrapper." It is a command-line utility designed for developers who value engineering rigor over generative "magic." It treats Large Language Models as non-deterministic execution engines that must be constrained within a strict, auditable pipeline: **Analyze → Plan → Execute → Validate**.
+AkitaLLM treats Large Language Models as **non-deterministic execution engines** that must operate inside a **strict, auditable pipeline**.
 
-Built as a local-first tool, it provides you with an AI-augmented workflow that respects your project's context, follows security best practices, and prioritizes structured output over conversational noise.
+Instead of asking an AI *“please fix my code”*, you force it to:
 
----
+1. **Analyze** the real project structure
+2. **Plan** concrete technical steps
+3. **Execute** changes as reviewable diffs
+4. **Validate** results with real tooling
 
-## Why AkitaLLM exists
-
-Most current AI tools (ChatGPT, Copilot, Cursor) operate in a "black-box" conversational mode. They are excellent at text generation but often fail at **software engineering**, which requires:
-- **Project-Level Context**: Understanding how a change in `utils.py` affects `main.py`.
-- **Previsibilty**: Knowing exactly what the AI intends to do before it modifies a single byte.
-- **Verification**: Automatically ensuring that proposed changes don't break existing logic.
-
-AkitaLLM was built to bridge this gap, treating AI as a component of a larger, human-controlled engineering process.
+No hidden prompts.  
+No blind edits.  
+No guessing.
 
 ---
 
-## The Engineering Difference
+## Why this project exists
 
-| Feature | Generic AI Tools | AkitaLLM |
-| :--- | :--- | :--- |
-| **Logic** | Conversational / Guesswork | Analyze → Plan → Execute → Validate |
-| **Control** | Autocomplete / Chat | Explicit technical plans & reviewable Diffs |
-| **Security** | Cloud-heavy | Local-first, respects `.gitignore` and `.env` |
-| **Validation** | Post-facto manual review | Automated local test execution |
-| **Philosophy** | "It just works" (Hype) | "Understand the internals" (Engineering) |
+Most AI coding tools optimize for **speed of output**.
+
+Software engineering optimizes for:
+- correctness
+- predictability
+- debuggability
+- long-term maintainability
+
+That mismatch causes real problems:
+
+- Code is generated without understanding the project
+- Developers approve changes they don’t fully understand
+- Bugs are pushed faster, not fewer
+
+AkitaLLM exists to **slow AI down** and force it to behave like a junior engineer working under strict supervision.
 
 ---
 
-## Core Principles
+## The core difference
 
-1. **Local-First**: Your code remains on your machine. AkitaLLM orchestrates local models (via Ollama) or remote APIs (via LiteLLM) through encrypted, controlled channels.
-2. **Contextual Awareness**: It uses recursive file scanning and structure analysis to build a high-fidelity map of your project before making suggestions.
-3. **No Magic**: No hidden prompts, no mysterious "thinking" phases. All actions are logged, auditable, and based on standard engineering patterns.
-4. **Tool-Driven**: AI is a user of tools (linters, test runners, AST parsers), not a replacement for them.
+| Aspect | Typical AI Tools | AkitaLLM |
+|------|-----------------|----------|
+| Interaction | Chat / Autocomplete | Structured pipeline |
+| Control | Implicit | Explicit and reviewable |
+| Output | Raw code | Unified diffs |
+| Context | Prompt-limited | Project-aware |
+| Validation | Manual | Automated |
+| Philosophy | “Trust the model” | “Trust the process” |
 
 ---
 
-## Key Features
+## Design principles
 
-- **Structural Code Review**: Detailed analysis of bugs, style, performance, and security risks with prioritized severity levels.
-- **Technical Planning**: Generation of step-by-step implementation plans in Markdown for complex feature requests.
-- **Actionable Diffs**: Proposed changes are generated as standard Unified Diffs for human review before application.
-- **Environment Isolation**: Supports `.env` and local configuration storage (`~/.akita/`) to keep secrets safe.
-- **Model Agnostic**: Seamlessly switch between GPT-4o, Claude 3.5, Llama 3, and more.
+**Local-first**  
+Your code stays on your machine. AkitaLLM runs locally and only sends what is strictly necessary to the model.
+
+**No magic**  
+Every decision is logged. Every step is inspectable. Every change is explicit.
+
+**Tool-driven**  
+The AI uses tools (AST parsing, tests, linters). It does not replace them.
+
+**Human-in-the-loop**  
+Nothing is applied without your approval.
+
+---
+
+## What AkitaLLM can do today
+
+- 🔍 **Structural code reviews**  
+  Detect bugs, architectural risks, performance issues, and security problems.
+
+- 🧭 **Technical planning**  
+  Generate step-by-step implementation plans in Markdown.
+
+- 🧩 **Diff-based solutions**  
+  Propose changes as standard unified diffs — no direct file mutation.
+
+- 🧪 **Local validation**  
+  Run tests and tooling before applying changes.
+
+- 🔌 **Extensible architecture**  
+  Plugin system for custom tools and workflows.
+
+- 🤖 **Model agnostic**  
+  Works with OpenAI, Anthropic, Ollama, and any LiteLLM-compatible provider.
 
 ---
 
 ## Installation
 
-AkitaLLM is available on PyPI. You can install it directly using pip:
-
 ```bash
 pip install akitallm
-```
+````
+
+Python 3.10+ required.
 
 ---
 
-## Usage
+## Basic usage
 
-### 1. Project Initialization
-Run any command to trigger the initial configuration and onboarding.
+### Initialize / Review a project
+
 ```bash
 akita review .
 ```
 
-### 2. Strategic Code Review
-Analyze a directory for potential architectural risks and bugs.
+### Generate a technical plan
+
 ```bash
-akita review src/
+akita plan "Refactor authentication to use JWT with refresh tokens"
 ```
 
-### 3. Implementation Planning
-Generate a technical plan for a specific goal.
+### Solve a concrete problem
+
 ```bash
-akita plan "Implement JWT authentication with Redis-based session storage"
+akita solve "Fix silent failures in the reasoning engine error handling"
 ```
 
-### 4. Code Problem Solving
-Generate a diff to solve a precise issue or refactor a module.
-```bash
-akita solve "Improve error handling in the reasoning engine to prevent silent failures"
+All commands follow the same pipeline:
+
+```
+Analyze → Plan → Execute → Validate
 ```
 
 ---
 
-### 🔌 Extensibility
-AkitaLLM is built to be extended. You can create your own tools and plugins. Check the [Plugin Development Guide](PLUGINS.md) for more details.
+## Extending AkitaLLM
 
-## 🤝 Contributing
+AkitaLLM is designed to be extended by engineers.
 
-We are looking for engineers, not just coders. If you value robust abstractions, clean code, and predictable systems, your contribution is welcome.
+* Custom tools
+* Custom validators
+* Custom reasoning steps
 
-Review our [CONTRIBUTING.md](CONTRIBUTING.md) to understand our engineering standards and PR workflow. High-quality PRs with test coverage are prioritized.
+See the [Plugin Development Guide](PLUGINS.md).
 
 ---
 
-*“Understanding the internals is the first step to excellence.”*
+## Contributing
+
+AkitaLLM is not looking for volume.
+It is looking for **engineering-quality contributions**.
+
+If you care about:
+
+* clean abstractions
+* predictable systems
+* readable diffs
+* testable behavior
+
+You’ll fit right in.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+> “Understanding the internals is the first step to excellence.”
