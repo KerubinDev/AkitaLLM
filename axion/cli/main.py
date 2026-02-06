@@ -19,8 +19,14 @@ from axion.core.providers import detect_provider
 from axion.core.i18n import t
 from axion.cli.doctor import doctor_app
 
-# Load environment variables from .env file
+# Load environment variables from local .env
 load_dotenv()
+
+# Load environment variables from global Axion .env
+from axion.core.config import CONFIG_DIR
+GLOBAL_ENV = CONFIG_DIR / ".env"
+if GLOBAL_ENV.exists():
+    load_dotenv(GLOBAL_ENV)
 
 app = typer.Typer(
     name="axion",
@@ -115,6 +121,16 @@ def run_onboarding():
     if use_env and provider.name != "ollama":
         env_var_name = f"{provider.name.upper()}_API_KEY"
         console.print(t("onboarding.env_instruction", env_var=env_var_name))
+        
+        # Proactively offer to save the key to global .env if not already set or different
+        if os.getenv(env_var_name) != api_key:
+            if typer.confirm(f"Save this key to {GLOBAL_ENV}?"):
+                if not CONFIG_DIR.exists(): CONFIG_DIR.mkdir(parents=True)
+                with open(GLOBAL_ENV, "a") as f:
+                    f.write(f"\n{env_var_name}={api_key}")
+                os.environ[env_var_name] = api_key
+                console.print(f"[green]✅ Variable {env_var_name} set and saved.[/]")
+
         final_key_ref = f"env:{env_var_name}"
 
     config = {

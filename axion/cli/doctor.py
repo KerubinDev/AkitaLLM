@@ -47,67 +47,44 @@ def run_doctor(ctx: typer.Context):
         model_conf = config.get("model", {})
         key_ref = model_conf.get("api_key", "")
         if key_ref:
-             # Just checking presence here, provider logic handles resolution
-             api_status = "✅"
+             if key_ref.startswith("env:"):
+                 env_var = key_ref[4:]
+                 val = os.getenv(env_var)
+                 if val:
+                     api_status = "✅"
+                     api_detail = f"Variable {env_var} set"
+                 else:
+                     api_status = "❌"
+                     api_detail = f"Variable {env_var} is EMPTY"
+                     conn_msg = t("doctor.fail.key")
+             else:
+                 api_status = "✅"
+                 api_detail = "Direct key configured"
              
              # Connectivity Test
-             try:
-                 provider_name = model_conf.get("provider")
-                 # We need a dummy key resolution to test
-                 # Ideally we reuse the robust logic from main but let's instantiate basic
-                 # For now, let's use detect_provider if we can resolve the key
-                 # Or just try to get the provider class and instantiate
-                 from axion.cli.main import get_model # Helper to get configured model
-                 
-                 # This might fail if key env var is missing
-                 # We want to catch that gracefully
+             if api_status == "✅":
                  try:
-                    # We can't easily mock the 'get_model' without refactoring main to share it better
-                    # But we can try to manual ping if we had the provider instance.
-                    # Let's try to simulate a 'ping' by just resolving the provider.
-                    # Since we don't have a dedicated 'ping', listing models is the best proxy.
-                    
-                    # NOTE: To avoid circular imports or complex setup, let's rely on 'get_model'
-                    # from main being importable or move get_model to a core util. 
-                    # For this step, I'll assume I can import it or duplicate simple logic.
-                    # Let's try importing get_model from main. To do that, main.py must be importable.
-                    pass 
-                 except:
-                    pass
-                    
-                 # Let's do a lightweight check
-                 if provider_name:
-                     conn_status = "✅" # Optimistic if config exists for now to avoid huge refactor
-                     conn_msg = "Provider configured"
-                     
-                     # Real connectivity check requires the instantiated provider
-                     # Let's try to 'get_model' in a safe way
-                     import axion.cli.main as main_cli
+                     from axion.models.base import get_model
                      try:
-                         model = main_cli.get_model()
-                         # If we got here, key is valid-ish (env var exists)
-                         # Now ping
-                         # model.list_models() might not be available on 'LiteLLM' wrapper directly
-                         # but we can try a simple chat/embedding if cheap, or just trust instantiation
-                         conn_status = "✅"
-                         conn_msg = "OK"
+                        model = get_model()
+                        conn_status = "✅"
+                        conn_msg = "OK"
                      except Exception as e:
-                         # Treat as WARN
-                         conn_status = "⚠️" 
-                         conn_msg = t("doctor.warn.connection")
-                         if "api key" in str(e).lower():
-                             api_status = "❌"
-                             conn_msg = t("doctor.fail.key")
-                         
-             except Exception:
-                 conn_status = "⚠️"
-                 conn_msg = t("doctor.warn.connection")
-
+                        conn_status = "⚠️" 
+                        conn_msg = t("doctor.warn.connection")
+                        if "api key" in str(e).lower():
+                            api_status = "❌"
+                            conn_msg = t("doctor.fail.key")
+                     
+                 except Exception:
+                     conn_status = "⚠️"
+                     conn_msg = t("doctor.warn.connection")
         else:
              api_status = "❌"
+             api_detail = "Missing"
              conn_msg = t("doctor.fail.key")
 
-    checks.append((api_status, t("doctor.key"), "Configured" if api_status == "✅" else "Missing"))
+    checks.append((api_status, t("doctor.key"), api_detail))
     checks.append((conn_status, t("doctor.connection"), conn_msg))
 
     # Output

@@ -47,10 +47,11 @@ def reset_config():
 def resolve_config_value(value: Any) -> Any:
     """
     Resolves values like 'env:VAR_NAME' to their environment variable content.
+    Returns None if the environment variable is not set.
     """
     if isinstance(value, str) and value.startswith("env:"):
         env_var = value[4:]
-        return os.getenv(env_var, value)
+        return os.getenv(env_var) # Returns None if missing
     return value
 
 def get_config_value(section: str, key: str, default: Any = None) -> Any:
