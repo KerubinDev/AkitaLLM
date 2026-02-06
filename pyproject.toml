@@ -1,7 +1,7 @@
 [project]
-name = "akitallm"
+name = "axion"
 version = "1.2.2"
-description = "AkitaLLM: An open-source local-first AI system for programming."
+description = "Axion: An open-source local-first AI system for programming."
 authors = [{ name = "KerubinDev" }]
 readme = "README.md"
 license = { text = "MIT" }
@@ -33,19 +33,19 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/KerubinDev/AkitaLLM"
-Repository = "https://github.com/KerubinDev/AkitaLLM"
-Issues = "https://github.com/KerubinDev/AkitaLLM/issues"
+Homepage = "https://github.com/KerubinDev/Axion"
+Repository = "https://github.com/KerubinDev/Axion"
+Issues = "https://github.com/KerubinDev/Axion/issues"
 
 [project.scripts]
-akita = "akita.cli.main:app"
+axion = "axion.cli.main:app"
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
-[project.entry-points."akitallm.plugins"]
-files = "akita.plugins.files:FilesPlugin"
+[project.entry-points."axion.plugins"]
+files = "axion.plugins.files:FilesPlugin"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -9,22 +9,22 @@ from rich.markdown import Markdown
 from rich.syntax import Syntax
 from dotenv import load_dotenv
 
-from akita.reasoning.engine import ReasoningEngine
-from akita.core.indexing import CodeIndexer
-from akita.models.base import get_model
-from akita.core.config import load_config, save_config, reset_config, CONFIG_FILE
-from akita.tools.diff import DiffApplier
-from akita.tools.git import GitTool
-from akita.core.providers import detect_provider
-from akita.core.i18n import t
-from akita.cli.doctor import doctor_app
+from axion.reasoning.engine import ReasoningEngine
+from axion.core.indexing import CodeIndexer
+from axion.models.base import get_model
+from axion.core.config import load_config, save_config, reset_config, CONFIG_FILE
+from axion.tools.diff import DiffApplier
+from axion.tools.git import GitTool
+from axion.core.providers import detect_provider
+from axion.core.i18n import t
+from axion.cli.doctor import doctor_app
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = typer.Typer(
-    name="akita",
-    help="AkitaLLM: Local-first AI orchestrator for programmers.",
+    name="axion",
+    help="Axion: Local-first AI orchestrator for programmers.",
     add_completion=False,
 )
 app.add_typer(doctor_app, name="doctor")

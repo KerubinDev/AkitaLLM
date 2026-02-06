@@ -1,7 +1,7 @@
 import pytest
-from akita.reasoning.engine import ReasoningEngine
-from akita.reasoning.session import ConversationSession
-from akita.models.base import AIModel
+from axion.reasoning.engine import ReasoningEngine
+from axion.reasoning.session import ConversationSession
+from axion.models.base import AIModel
 
 class MockModel(AIModel):
     def chat(self, messages):

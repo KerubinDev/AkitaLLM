@@ -7,7 +7,7 @@ except ImportError:
     import tomli as tomllib
 import tomli_w
 
-CONFIG_DIR = pathlib.Path.home() / ".akita"
+CONFIG_DIR = pathlib.Path.home() / ".axion"
 CONFIG_FILE = CONFIG_DIR / "config.toml"
 
 DEFAULT_CONFIG = {
@@ -19,11 +19,11 @@ DEFAULT_CONFIG = {
 }
 
 def ensure_config_dir():
-    """Ensure the ~/.akita directory exists."""
+    """Ensure the ~/.axion directory exists."""
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
 def load_config() -> Optional[Dict[str, Any]]:
-    """Load configuration from ~/.akita/config.toml."""
+    """Load configuration from ~/.axion/config.toml."""
     if not CONFIG_FILE.exists():
         return None
     

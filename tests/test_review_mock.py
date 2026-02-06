@@ -1,8 +1,8 @@
 import json
 from unittest.mock import MagicMock
-from akita.reasoning.engine import ReasoningEngine
-from akita.models.base import AIModel, ModelResponse
-from akita.core.config import save_config
+from axion.reasoning.engine import ReasoningEngine
+from axion.models.base import AIModel, ModelResponse
+from axion.core.config import save_config
 
 def test_mock_review():
     # Mock model

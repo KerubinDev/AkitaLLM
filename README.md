@@ -1,10 +1,10 @@
-# AkitaLLM
+# Axion
 
-![PyPI](https://img.shields.io/pypi/v/akitallm)
-![Python](https://img.shields.io/pypi/pyversions/akitallm)
-![License](https://img.shields.io/github/license/KerubinDev/AkitaLLM)
-[![Tests](https://img.shields.io/github/actions/workflow/status/KerubinDev/AkitaLLM/tests.yml)](https://github.com/KerubinDev/AkitaLLM/actions)
-![Downloads](https://img.shields.io/pypi/dm/akitallm)
+![PyPI](https://img.shields.io/pypi/v/axion)
+![Python](https://img.shields.io/pypi/pyversions/axion)
+![License](https://img.shields.io/github/license/KerubinDev/Axion)
+[![Tests](https://img.shields.io/github/actions/workflow/status/KerubinDev/Axion/tests.yml)](https://github.com/KerubinDev/Axion/actions)
+![Downloads](https://img.shields.io/pypi/dm/axion)
 
 
 ```
@@ -114,7 +114,7 @@ Nothing is applied without your approval.
 ## Installation
 
 ```bash
-pip install akitallm
+pip install axion
 ````
 
 Python 3.10+ required.
@@ -126,19 +126,19 @@ Python 3.10+ required.
 ### Initialize / Review a project
 
 ```bash
-akita review .
+axion review .
 ```
 
 ### Generate a technical plan
 
 ```bash
-akita plan "Refactor authentication to use JWT with refresh tokens"
+axion plan "Refactor authentication to use JWT with refresh tokens"
 ```
 
 ### Solve a concrete problem
 
 ```bash
-akita solve "Fix silent failures in the reasoning engine error handling"
+axion solve "Fix silent failures in the reasoning engine error handling"
 ```
 
 All commands follow the same pipeline:

@@ -1,6 +1,6 @@
 import pytest
-from akita.core.ast_utils import ASTParser
-from akita.tools.context import ContextBuilder
+from axion.core.ast_utils import ASTParser
+from axion.tools.context import ContextBuilder
 from pathlib import Path
 
 def test_ast_parser_definitions(tmp_path):

@@ -1,5 +1,5 @@
 from pathlib import Path
-from akita.tools.diff import DiffApplier
+from axion.tools.diff import DiffApplier
 
 def test_reject_invalid_context(tmp_path):
     """

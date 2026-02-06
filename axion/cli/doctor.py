@@ -4,9 +4,9 @@ import shutil
 from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
-from akita.core.config import load_config, CONFIG_FILE
-from akita.core.providers import detect_provider
-from akita.core.i18n import t
+from axion.core.config import load_config, CONFIG_FILE
+from axion.core.providers import detect_provider
+from axion.core.i18n import t
 
 doctor_app = typer.Typer(help="Diagnose system and configuration issues.")
 console = Console()
@@ -14,7 +14,7 @@ console = Console()
 @doctor_app.callback(invoke_without_command=True)
 def run_doctor(ctx: typer.Context):
     """
-    Run a health check on the AkitaLLM environment.
+    Run a health check on the Axion environment.
     """
     if ctx.invoked_subcommand:
         return
@@ -82,7 +82,7 @@ def run_doctor(ctx: typer.Context):
                      
                      # Real connectivity check requires the instantiated provider
                      # Let's try to 'get_model' in a safe way
-                     import akita.cli.main as main_cli
+                     import axion.cli.main as main_cli
                      try:
                          model = main_cli.get_model()
                          # If we got here, key is valid-ish (env var exists)

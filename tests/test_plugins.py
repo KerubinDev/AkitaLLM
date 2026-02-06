@@ -1,5 +1,5 @@
 import pytest
-from akita.core.plugins import PluginManager, AkitaPlugin
+from axion.core.plugins import PluginManager, AkitaPlugin
 from typing import List, Dict, Any
 
 class MockPlugin(AkitaPlugin):
@@ -29,8 +29,8 @@ def test_plugin_manager_get_tools():
     assert any(t["name"] == "mock_tool" for t in tools)
 
 def test_reasoning_engine_uses_plugins(monkeypatch):
-    from akita.reasoning.engine import ReasoningEngine
-    from akita.models.base import AIModel
+    from axion.reasoning.engine import ReasoningEngine
+    from axion.models.base import AIModel
     
     class FakeModel(AIModel):
         def chat(self, messages): return type('obj', (object,), {'content': '{}'})()

@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 def build():
-    print("🚀 Starting AkitaLLM Binary Build Process...")
+    print("🚀 Starting Axion Binary Build Process...")
     
     # 1. Ensure PyInstaller is installed
     try:
@@ -14,8 +14,8 @@ def build():
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pyinstaller"])
 
     # 2. Define parameters
-    entry_point = "akita/cli/main.py"
-    output_name = "akita"
+    entry_point = "axion/cli/main.py"
+    output_name = "axion"
     
     # Tree-sitter needs to include its shared libraries/languages
     # We include them as data files if needed, but for now we try a simple build

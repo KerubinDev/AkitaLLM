@@ -1,7 +1,7 @@
 def test_version():
     import tomli
     from pathlib import Path
-    from akita import __version__
+    from axion import __version__
     
     # Locate pyproject.toml relative to this test file
     root_dir = Path(__file__).parent.parent
@@ -14,5 +14,5 @@ def test_version():
     assert __version__ == project_version, "Module version does not match pyproject.toml"
 
 def test_cli_import():
-    from akita.cli.main import app
+    from axion.cli.main import app
     assert app.registered_commands is not None

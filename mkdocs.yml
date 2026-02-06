@@ -1,6 +1,6 @@
-site_name: AkitaLLM Docs
+site_name: Axion Docs
 site_description: Local-first AI orchestrator for programmers.
-repo_url: https://github.com/KerubinDev/AkitaLLM
+repo_url: https://github.com/KerubinDev/Axion
 theme:
   name: material
   palette:
